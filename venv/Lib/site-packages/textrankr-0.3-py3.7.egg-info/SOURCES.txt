@@ -1,0 +1,10 @@
+setup.cfg
+setup.py
+tests/__init__.py
+tests/test.py
+textrankr/__init__.py
+textrankr.egg-info/PKG-INFO
+textrankr.egg-info/SOURCES.txt
+textrankr.egg-info/dependency_links.txt
+textrankr.egg-info/requires.txt
+textrankr.egg-info/top_level.txt
