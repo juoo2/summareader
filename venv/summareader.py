@@ -84,36 +84,47 @@ class TextRank(object):
         else:
             return results
 
+def summareader():
 
-url="https://news.naver.com"
-context=ssl._create_unverified_context()
+    url="https://news.naver.com"
+    context=ssl._create_unverified_context()
 
-response=urlopen.urlopen(url, context=context)
-
-
-objBS= bs4.BeautifulSoup(response, "html.parser")
-news_item=objBS.find_all("ul",{"class":"section_list_ranking"})
-
-naverurl=[]
-newstitle=[]
-article=[]
-
-for nws in news_item:
-    txt=nws.find_all("a")
-    for we in txt:
-        k = "https://news.naver.com"+we.get('href')
-        title=we.text.strip()
-        naverurl.append(k)
-        newstitle.append(title)
+    response=urlopen.urlopen(url, context=context)
 
 
+    objBS= bs4.BeautifulSoup(response, "html.parser")
+    news_item=objBS.find_all("ul",{"class":"section_list_ranking"})
 
-for i in range(len(naverurl)):
-    news = Article(naverurl[i], language='ko')
-    news.download()
-    news.parse()
-    textrank = TextRank(news.text)
-    suma=textrank.summarize(5)
-    article.append(suma)
-    print(article[i],"\n-----------------------------------------------------------------------------------\n")
-    print(newstitle[i], "\n-----------------------------------------------------------------------------------\n")
+    naverurl=[]
+    newstitle=[]
+    article=[]
+
+    for nws in news_item:
+        txt=nws.find_all("a")
+        for we in txt:
+            k = "https://news.naver.com"+we.get('href')
+            title=we.text.strip()
+            naverurl.append(k)
+            newstitle.append(title)
+
+    for i in range(len(naverurl)):
+        url = naverurl[i]
+        context2 = ssl._create_unverified_context()
+        response2 = urlopen.urlopen(url, context=context)
+        objBS2 = bs4.BeautifulSoup(response2, "html.parser")
+       
+        newstime = str(objBS2.select('.t11'))
+        newstime = re.sub('<.+?>', '', newstime, 0, re.I | re.S)
+        newscontent = str(objBS2.find("div", {"class": "_article_body_contents"}))
+        newscontent = re.sub('<script.*?>.*?</script>', '', newscontent, 0, re.I | re.S)
+        text = re.sub('<.+?>', '', newscontent, 0, re.I | re.S)
+        articlecontent = text
+
+        textrank = TextRank(articlecontent)
+        suma=textrank.summarize(3)
+        article.append(suma)
+        print(article[i])
+        print("--------------------------------------------------------------------------------------------")
+    return newstitle, article
+summareader()
+
